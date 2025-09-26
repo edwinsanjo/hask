@@ -76,7 +76,7 @@
           <input
             type="text"
             id="capital"
-            value="17 september 2025"
+            value="9000"
             class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
           />
         </div>
@@ -90,7 +90,7 @@
           <input
             type="text"
             id="time"
-            value="12:30pm"
+            value="12:30am"
             class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
           />
         </div>
@@ -126,15 +126,23 @@
   </body>
 
   <script>
-    let assetName = document.getElementById("assetName").value;
-    let assetPrice = document.getElementById("assetPrice").value;
-    let expiry = document.getElementById("expiry").value;
-    let today = document.getElementById("today").value;
-    let capital = document.getElementById("capital").value;
-    let time = document.getElementById("time").value;
-    let closee = document.getElementById("close").value;
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("today").value= today;
+
+    const now = new Date();
+    const time = now.toLocaleTimeString();
+    document.getElementById("time").value = time;
 
     function generatePrompt() {
+        let assetName = document.getElementById("assetName").value;
+        let assetPrice = document.getElementById("assetPrice").value;
+        let expiry = document.getElementById("expiry").value;
+        let today = document.getElementById("today").value;
+        let capital = document.getElementById("capital").value;
+        let time = document.getElementById("time").value;
+        let closee = document.getElementById("close").value;
+
+      
         let prompt = `
         You are an expert financial analyst specializing in the Indian equity and derivatives markets, especially ${assetName} options. The current ${assetName} level is ${assetPrice} . 
 
