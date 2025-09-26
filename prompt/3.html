@@ -1,174 +1,176 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  </head>
-  <body class="bg-slate-900 h-screen text-white">
-    <div class="flex space-between">
-      <aside
-        class="bg-slate-800 h-screen border-r border-[#333338] p-6 flex flex-col"
-      >
-        <h1 class="text-2xl font-bold mb-8 text-white">Prompt Generator</h1>
-        <div class="mb-5">
-          <label
-            for="assetName"
-            class="block text-xs font-medium text-[#9a9aa0] mb-2"
-            >Asset Name</label
-          >
-          <input
-            type="text"
-            id="assetName"
-            value="NIFTY 50"
-            class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
-          />
-        </div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prompt Generator | Dark UI</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        <div class="mb-5">
-          <label
-            for="assetPrice"
-            class="block text-xs font-medium text-[#9a9aa0] mb-2"
-            >Asset Price</label
-          >
-          <input
-            type="text"
-            id="assetPrice"
-            value="25300.00"
-            class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
-          />
-        </div>
-
-        <div class="mb-5">
-          <label
-            for="expiry"
-            class="block text-xs font-medium text-[#9a9aa0] mb-2"
-            >Expiry Date</label
-          >
-          <input
-            type="text"
-            id="expiry"
-            value="17 september 2025"
-            class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
-          />
-        </div>
-
-        <div class="mb-5">
-          <label
-            for="today"
-            class="block text-xs font-medium text-[#9a9aa0] mb-2"
-            >Todays Date</label
-          >
-          <input
-            type="text"
-            id="today"
-            value="17 september 2025"
-            class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
-          />
-        </div>
-
-        <div class="mb-5">
-          <label
-            for="capital"
-            class="block text-xs font-medium text-[#9a9aa0] mb-2"
-            >Capital</label
-          >
-          <input
-            type="text"
-            id="capital"
-            value="9000"
-            class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
-          />
-        </div>
-
-        <div class="mb-5">
-          <label
-            for="time"
-            class="block text-xs font-medium text-[#9a9aa0] mb-2"
-            >TimeNow</label
-          >
-          <input
-            type="text"
-            id="time"
-            value="12:30am"
-            class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
-          />
-        </div>
-
-        <div class="mb-5">
-          <label
-            for="close"
-            class="block text-xs font-medium text-[#9a9aa0] mb-2"
-            >timeTillTradeClose</label
-          >
-          <input
-            type="text"
-            id="close"
-            value="11:30pm"
-            class="w-full p-2.5 pr-12 bg-[#101014] border border-[#333338] rounded-md text-sm"
-          />
-        </div>
-
-        <button
-          id="generateBtn"
-          class="w-full py-3 bg-[#0d6efd] rounded-md text-white text-base font-semibold cursor-pointer transition hover:bg-[#0b5ed7] mt-auto"
-        onclick="generatePrompt()"
-          >
-          ▶ Generate Prompt
-        </button>
-      </aside>
-      <div class="h-screen px-8">
-        <h2 class="pb-8 pt-8">The Prompt</h2>
-        <p id="prompt" class="w-50%"></p>
-      </div>
-      <div class="h-screen"></div>
-    </div>
-  </body>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <script>
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById("today").value= today;
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Roboto Mono', 'monospace'],
+          },
+           colors: {
+            'gray-900': '#101014',
+            'gray-800': '#18181c',
+            'gray-700': '#333338',
+            'gray-400': '#9a9aa0',
+            'gray-200': '#e0e0e0',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans antialiased overflow-hidden">
 
-    const now = new Date();
-    const time = now.toLocaleTimeString();
-    document.getElementById("time").value = time;
+  <div class="grid grid-cols-[300px_1fr_280px] h-screen">
+    
+    <aside class="bg-gray-800 border-r border-gray-700 p-6 flex flex-col">
+      <h1 class="text-2xl font-bold mb-8 text-white">Prompt Generator</h1>
+      
+      <div class="space-y-4 overflow-y-auto pr-2">
+        <div>
+          <label for="assetName" class="block text-xs font-medium text-gray-400 mb-1">Asset Name</label>
+          <input type="text" id="assetName" value="NIFTY 50" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="assetPrice" class="block text-xs font-medium text-gray-400 mb-1">Asset Price</label>
+          <input type="text" id="assetPrice" value="25300.00" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="expiryDate" class="block text-xs font-medium text-gray-400 mb-1">Expiry Date</label>
+          <input type="text" id="expiryDate" value="30 October 2025" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="dateToday" class="block text-xs font-medium text-gray-400 mb-1">Today's Date</label>
+          <input type="text" id="dateToday" value="" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="capital" class="block text-xs font-medium text-gray-400 mb-1">Capital</label>
+          <input type="text" id="capital" value="9000" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="currentTime" class="block text-xs font-medium text-gray-400 mb-1">Time Now</label>
+          <input type="text" id="currentTime" value="" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="timeTillTradeClose" class="block text-xs font-medium text-gray-400 mb-1">Trade Close Time</label>
+          <input type="text" id="timeTillTradeClose" value="3:30 PM" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+      </div>
+      
+      <button id="generateBtn" class="w-full mt-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition duration-200">
+        Generate Prompt
+      </button>
+    </aside>
+
+    <main class="p-8 overflow-y-auto">
+      <h2 class="text-2xl font-bold text-white mb-4">Generated Prompt</h2>
+      <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 h-[calc(100%-4rem)]">
+        <pre id="promptOutput" class="whitespace-pre-wrap text-sm text-gray-300 font-sans h-full overflow-y-auto"></pre>
+      </div>
+    </main>
+
+    <aside class="bg-gray-800 border-l border-gray-700 p-6 overflow-y-auto">
+      <h2 class="text-lg font-semibold mb-4 text-white">Live Market Data</h2>
+      <div class="space-y-3">
+        <div class="flex justify-between items-center text-sm p-3 bg-gray-900 rounded-lg">
+          <span class="text-gray-400 font-semibold">NIFTY 50</span>
+          <span class="font-mono font-semibold text-green-500">25,305.50</span>
+        </div>
+        <div class="flex justify-between items-center text-sm p-3 bg-gray-900 rounded-lg">
+          <span class="text-gray-400 font-semibold">SENSEX</span>
+          <span class="font-mono font-semibold text-green-500">82,450.11</span>
+        </div>
+        <div class="flex justify-between items-center text-sm p-3 bg-gray-900 rounded-lg">
+          <span class="text-gray-400 font-semibold">Crude Oil</span>
+          <span class="font-mono font-semibold text-red-500">7,150.00</span>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script>
+    // --- NEW FUNCTION ---
+    // Autofills the date and time fields with current values
+    function autofillDateTime() {
+      const now = new Date();
+      
+      // Format the date e.g., "26 September 2025"
+      const formattedDate = now.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      
+      // Format the time e.g., "4:16 PM"
+      const formattedTime = now.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+      
+      document.getElementById('dateToday').value = formattedDate;
+      document.getElementById('currentTime').value = formattedTime;
+    }
+
+    // Attach event listener to the button
+    document.getElementById('generateBtn').addEventListener('click', generatePrompt);
 
     function generatePrompt() {
-        let assetName = document.getElementById("assetName").value;
-        let assetPrice = document.getElementById("assetPrice").value;
-        let expiry = document.getElementById("expiry").value;
-        let today = document.getElementById("today").value;
-        let capital = document.getElementById("capital").value;
-        let time = document.getElementById("time").value;
-        let closee = document.getElementById("close").value;
+      const assetName = document.getElementById("assetName").value;
+      const assetPrice = document.getElementById("assetPrice").value;
+      const expiryDate = document.getElementById("expiryDate").value;
+      const dateToday = document.getElementById("dateToday").value;
+      const capital = document.getElementById("capital").value;
+      const currentTime = document.getElementById("currentTime").value;
+      const timeTillTradeClose = document.getElementById("timeTillTradeClose").value;
 
-      
-        let prompt = `
-        You are an expert financial analyst specializing in the Indian equity and derivatives markets, especially ${assetName} options. The current ${assetName} level is ${assetPrice} . 
+      const promptText = `
+You are an expert financial analyst specializing in the Indian equity and derivatives markets, especially ${assetName} options. The current ${assetName} level is ${assetPrice}.
 
 Using a combination of:
 • Technical analysis (candlestick patterns, intraday indicators, support/resistance, implied volatility, option Greeks, etc.)
-• Fundamental analysis (macroeconomic cues, FII/DII flows, sectoral news, global markets impact) 
-• Real-time news sentiment (headlines, corporate announcements, RBI commentary, geopolitical developments) 
+• Fundamental analysis (macroeconomic cues, FII/DII flows, sectoral news, global markets impact)
+• Real-time news sentiment (headlines, corporate announcements, RBI commentary, geopolitical developments)
 
-produce a short report with intraday probability estimates (in percentages) for whether ${assetName} will move: 
-1. Upside 
-2. Downside 
-3. volatile market ( market maybe goes big up or down)
-Specifically: 1. Starting from the current index level of ${assetPrice}, calculate the probability (in %) that the index will finish the trading day higher, lower, or roughly flat. Clearly state your assumptions (e.g., what technical patterns or news you’re emphasizing). 2. Based on those probabilities, recommend which option‑buying near ATM call and put is likely to yield the highest expected profit today: Buying call options only near ATM Buying put options only near ATM For each strategy, estimate the expected return (percentage) and mention any major risks (e.g., sudden volatility spikes, unexpected news). I want to trade between intraday now market open . 
+produce a short report with intraday probability estimates (in percentages) for whether ${assetName} will move:
+1. Upside
+2. Downside
+3. volatile market (market maybe goes big up or down)
 
-Let’s assume a high‑risk* approach. I will take the oct monthly expiry, which will be ${expiry}. At the end, provide a concise “Actionable Summary”: 
-• Which specific strategy should I execute today ${today} —buy calls, buy puts or both buy? 
-• Which strike(s) would you choose if you were trading intraday? 
-• Approximately what premium (₹) and probability (%) does each recommended position carry? 
-capital ${capital}, need to close in a winning position before ${closee} today itself , now time ${time} Give me the tp1 adn tp2 and sl1 and sl2 in LTP and in rupeese(how much do i win if sl hit or tp hit in rs) also , and check all nse otpion chain and other webiste for live option price, and any global news that will affect or increase the chance of winning the trade. tp1 must be a realisable take profit
+Specifically: 
+1. Starting from the current index level of ${assetPrice}, calculate the probability (in %) that the index will finish the trading day higher, lower, or roughly flat. Clearly state your assumptions (e.g., what technical patterns or news you’re emphasizing). 
+2. Based on those probabilities, recommend which option-buying near ATM call and put is likely to yield the highest expected profit today: Buying call options only near ATM Buying put options only near ATM For each strategy, estimate the expected return (percentage) and mention any major risks (e.g., sudden volatility spikes, unexpected news). I want to trade between intraday now market open.
 
-
-        `
-        document.getElementById("prompt").innerHTML = prompt;
+Let’s assume a high-risk* approach. I will take the monthly expiry, which will be ${expiryDate}. At the end, provide a concise “Actionable Summary”:
+• Which specific strategy should I execute today ${dateToday} — buy calls, buy puts or both buy?
+• Which strike(s) would you choose if you were trading intraday?
+• Approximately what premium (₹) and probability (%) does each recommended position carry?
+capital ${capital}, need to close in a winning position before ${timeTillTradeClose} today itself, now time ${currentTime}. Give me the tp1 and tp2 and sl1 and sl2 in LTP and in rupees (how much do I win if sl hit or tp hit in rs) also, and check all nse option chain and other website for live option price, and any global news that will affect or increase the chance of winning the trade. tp1 must be a realisable take profit.
+      `;
+      
+      document.getElementById("promptOutput").textContent = promptText.trim();
     }
     
-    
-
+    // --- UPDATED ---
+    // Run these functions when the page loads
+    window.addEventListener('load', () => {
+        autofillDateTime(); // First, fill the fields
+        generatePrompt(); // Then, generate the initial prompt with the new data
+    });
   </script>
+
+</body>
 </html>
