@@ -3,351 +3,210 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trading Co-Pilot | AI Market Analysis</title>
+  <title>Prompt Generator | Dark UI</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-main: #101014;
-      --bg-panel: #18181c;
-      --bg-card: #202025;
-      --border-color: #333338;
-      --text-primary: #e0e0e0;
-      --text-secondary: #9a9aa0;
-      --accent-blue: #0d6efd;
-      --accent-blue-hover: #0b5ed7;
-      --color-green: #28a745;
-      --color-red: #dc3545;
-      --color-yellow: #ffc107;
-      --font-primary: 'Inter', sans-serif;
-      --font-mono: 'Roboto Mono', monospace;
-    }
-    
-    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: var(--font-primary);
-      background-color: var(--bg-main);
-      color: var(--text-primary);
-      overflow: hidden;
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Roboto Mono', 'monospace'],
+          },
+           colors: {
+            'gray-900': '#101014',
+            'gray-800': '#18181c',
+            'gray-700': '#333338',
+            'gray-400': '#9a9aa0',
+            'gray-200': '#e0e0e0',
+          }
+        }
+      }
     }
-
-    .dashboard-container {
-      display: grid;
-      grid-template-columns: 280px 1fr 320px;
-      height: 100vh;
-    }
-    
-    /* === Control Panel (Left) === */
-    .control-panel {
-      background-color: var(--bg-panel);
-      border-right: 1px solid var(--border-color);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .control-panel h1 {
-      font-size: 1.5rem;
-      margin-bottom: 2rem;
-      color: var(--text-primary);
-    }
-
-    .form-group { margin-bottom: 1.25rem; }
-
-    .control-panel label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-
-    .control-panel select, .control-panel input {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      font-family: var(--font-primary);
-    }
-    
-    .risk-profile { display: flex; justify-content: space-between; gap: 0.5rem; }
-    .risk-profile label {
-      flex: 1;
-      text-align: center;
-      padding: 0.6rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s, border-color 0.2s;
-    }
-    .risk-profile input[type="radio"] { display: none; }
-    .risk-profile input:checked + label {
-      background-color: var(--accent-blue);
-      border-color: var(--accent-blue);
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .generate-btn {
-      width: 100%;
-      padding: 0.8rem;
-      background-color: var(--accent-blue);
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      margin-top: auto; /* Pushes button to the bottom */
-    }
-    .generate-btn:hover { background-color: var(--accent-blue-hover); }
-
-    /* === Report Panel (Center) === */
-    .report-panel {
-      padding: 2rem;
-      overflow-y: auto;
-    }
-    .report-panel .placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      flex-direction: column;
-      color: var(--text-secondary);
-    }
-    .report-panel .placeholder svg {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 1rem;
-    }
-    .report-panel-content { display: none; } /* Hidden by default */
-    .report-grid {
-        display: grid;
-        gap: 1.5rem;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: auto auto 1fr;
-    }
-    
-    .report-card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 1.5rem;
-    }
-
-    .report-card h3 {
-        color: var(--text-secondary);
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-    }
-
-    #outlook-card { grid-column: 1 / -1; display: flex; justify-content: space-around; }
-    .gauge { text-align: center; }
-    .gauge .value { font-size: 2rem; font-weight: 700; }
-    .gauge.bullish .value { color: var(--color-green); }
-    .gauge.bearish .value { color: var(--color-red); }
-    .gauge.volatile .value { color: var(--color-yellow); }
-    .gauge .label { font-size: 0.85rem; color: var(--text-secondary); }
-
-    #trade-card { grid-column: 1 / 2; grid-row: 2 / 3; text-align: center; }
-    .trade-action {
-        font-size: 1.2rem;
-        font-weight: 600;
-        padding: 0.5rem;
-        border-radius: 6px;
-        margin-bottom: 1rem;
-    }
-    .trade-action.buy { background-color: rgba(40, 167, 69, 0.2); color: var(--color-green); }
-    .trade-action.sell { background-color: rgba(220, 53, 69, 0.2); color: var(--color-red); }
-    .trade-details { font-size: 1.5rem; font-family: var(--font-mono); font-weight: 500;}
-    .trade-premium { margin-top: 0.5rem; color: var(--text-secondary); }
-
-    #params-card { grid-column: 2 / -1; grid-row: 2 / 3; }
-    .params-table { width: 100%; border-collapse: collapse; }
-    .params-table td { padding: 0.6rem 0; border-bottom: 1px solid var(--border-color); }
-    .params-table tr:last-child td { border-bottom: none; }
-    .params-table .label { color: var(--text-secondary); }
-    .params-table .value { text-align: right; font-weight: 600; font-family: var(--font-mono);}
-    .params-table .profit { color: var(--color-green); }
-    .params-table .loss { color: var(--color-red); }
-
-    #rationale-card { grid-column: 1 / -1; grid-row: 3 / 4; }
-    .rationale-list li { margin-bottom: 0.75rem; color: var(--text-secondary); }
-
-    /* === Context Panel (Right) === */
-    .context-panel {
-      background-color: var(--bg-panel);
-      border-left: 1px solid var(--border-color);
-      padding: 1.5rem;
-      overflow-y: auto;
-    }
-
-    .context-panel h2 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-primary); }
-    .news-item {
-        border-bottom: 1px solid var(--border-color);
-        padding: 1rem 0;
-    }
-    .news-item:last-child { border-bottom: none; }
-    .news-item .source { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
-    .news-item .headline { font-weight: 500; color: var(--text-primary); }
-    .data-point {
-        display: flex; justify-content: space-between; padding: 0.75rem 0;
-        border-bottom: 1px solid var(--border-color);
-    }
-    .data-point .label { color: var(--text-secondary); }
-    .data-point .value { font-weight: 600; font-family: var(--font-mono); }
-
-  </style>
+  </script>
 </head>
-<body>
-  <div class="dashboard-container">
-    <aside class="control-panel">
-      <h1>Trading Co-Pilot</h1>
-      <div class="form-group">
-        <label for="assetName">Index</label>
-        <select id="assetName">
-          <option>NIFTY 50</option>
-          <option>BANKNIFTY</option>
-          <option>FINNIFTY</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Current Price (LTP)</label>
-        <input type="text" id="assetPrice" value="25,074.95" readonly>
-      </div>
-      <div class="form-group">
-        <label for="expiryDate">Expiry</label>
-        <select id="expiryDate">
-          <option>30 OCT 2025</option>
-          <option>27 NOV 2025</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="capital">Capital (₹)</label>
-        <input type="number" id="capital" value="9000">
-      </div>
-      <div class="form-group">
-        <label>Risk Profile</label>
-        <div class="risk-profile">
-            <input type="radio" id="risk-con" name="risk" value="Conservative">
-            <label for="risk-con">Low</label>
-            <input type="radio" id="risk-mod" name="risk" value="Moderate">
-            <label for="risk-mod">Mid</label>
-            <input type="radio" id="risk-agg" name="risk" value="Aggressive" checked>
-            <label for="risk-agg">High</label>
+<body class="bg-gray-900 text-gray-200 font-sans antialiased overflow-hidden">
+
+  <div class="grid grid-cols-[300px_1fr_280px] h-screen">
+    
+    <aside class="bg-gray-800 border-r border-gray-700 p-6 flex flex-col">
+      <h1 class="text-2xl font-bold mb-8 text-white">Prompt Generator</h1>
+      
+      <div class="space-y-4 overflow-y-auto pr-2">
+        <div>
+          <label for="assetName" class="block text-xs font-medium text-gray-400 mb-1">Asset Name</label>
+          <input type="text" id="assetName" value="NIFTY 50" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="assetPrice" class="block text-xs font-medium text-gray-400 mb-1">Asset Price</label>
+          <input type="text" id="assetPrice" value="25300.00" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="expiryDate" class="block text-xs font-medium text-gray-400 mb-1">Expiry Date</label>
+          <input type="text" id="expiryDate" value="30 October 2025" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="dateToday" class="block text-xs font-medium text-gray-400 mb-1">Today's Date</label>
+          <input type="text" id="dateToday" value="" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="capital" class="block text-xs font-medium text-gray-400 mb-1">Capital</label>
+          <input type="text" id="capital" value="9000" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="currentTime" class="block text-xs font-medium text-gray-400 mb-1">Time Now</label>
+          <input type="text" id="currentTime" value="" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
+        </div>
+        <div>
+          <label for="timeTillTradeClose" class="block text-xs font-medium text-gray-400 mb-1">Trade Close Time</label>
+          <input type="text" id="timeTillTradeClose" value="3:30 PM" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition">
         </div>
       </div>
-      <button class="generate-btn" id="generateBtn">▶ Generate Analysis</button>
+      
+      <div class="mt-auto pt-4 text-center text-xs text-gray-400">
+        Prompt updates automatically
+      </div>
+
     </aside>
 
-    <main class="report-panel" id="reportPanel">
-        <div class="placeholder" id="placeholder">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2zm1 12v-6a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v6h2zM8 14v-4a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v4h2zM5 14V9a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v5h2z"/></svg>
-            <h2>Your AI Trade Analysis Will Appear Here</h2>
-            <p>Configure parameters on the left and click "Generate".</p>
-        </div>
-
-        <div class="report-panel-content" id="reportContent">
-            <div class="report-grid">
-                <div id="outlook-card" class="report-card">
-                    <div class="gauge bullish">
-                        <div class="value">65%</div>
-                        <div class="label">Upside Probability</div>
-                    </div>
-                    <div class="gauge bearish">
-                        <div class="value">25%</div>
-                        <div class="label">Downside Probability</div>
-                    </div>
-                    <div class="gauge volatile">
-                        <div class="value">10%</div>
-                        <div class="label">High Volatility</div>
-                    </div>
-                </div>
-
-                <div id="trade-card" class="report-card">
-                    <h3>Recommended Trade</h3>
-                    <div class="trade-action buy">BUY CALL OPTION</div>
-                    <div class="trade-details">NIFTY 25100 CE</div>
-                    <div class="trade-premium">Premium: ~₹180</div>
-                </div>
-
-                <div id="params-card" class="report-card">
-                    <h3>Trade Parameters (Capital: ₹9,000)</h3>
-                    <table class="params-table">
-                        <tr><td class="label">Entry Price (LTP)</td><td class="value">180.00</td></tr>
-                        <tr><td class="label">Take Profit 1 (TP1)</td><td class="value">225.00 <span class="profit">(+₹2,250)</span></td></tr>
-                        <tr><td class="label">Take Profit 2 (TP2)</td><td class="value">270.00 <span class="profit">(+₹4,500)</span></td></tr>
-                        <tr><td class="label">Stop Loss (SL)</td><td class="value">135.00 <span class="loss">(-₹2,250)</span></td></tr>
-                    </table>
-                </div>
-
-                <div id="rationale-card" class="report-card">
-                    <h3>Analysis Rationale</h3>
-                    <ul class="rationale-list">
-                        <li><strong>Technical:</strong> Index is showing strong support at the 25,000 level with bullish divergence on the 15-min RSI.</li>
-                        <li><strong>Sentiment:</strong> Positive global cues from Asian markets and favorable FII inflow data from yesterday's session.</li>
-                        <li><strong>Options Data:</strong> Significant Put writing at the 25,000 strike indicates strong belief in market support.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <main class="p-8 overflow-y-auto flex flex-col h-screen">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-white">Generated Prompt</h2>
+        <button id="copyBtn" class="bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-2 px-4 rounded-md text-sm transition duration-200">
+          Copy
+        </button>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 flex-grow">
+        <pre id="promptOutput" class="whitespace-pre-wrap text-sm text-gray-300 font-sans h-full overflow-y-auto"></pre>
+      </div>
     </main>
 
-    <aside class="context-panel">
-      <h2>Live Market Context</h2>
-      <div class="data-points">
-        <div class="data-point">
-            <span class="label">India VIX</span>
-            <span class="value" style="color: var(--color-green)">12.45 (-2.1%)</span>
+    <aside class="bg-gray-800 border-l border-gray-700 p-6 overflow-y-auto">
+      <h2 class="text-lg font-semibold mb-4 text-white">Live Market Data</h2>
+      <div class="space-y-3">
+        <div class="flex justify-between items-center text-sm p-3 bg-gray-900 rounded-lg">
+          <span class="text-gray-400 font-semibold">NIFTY 50</span>
+          <span class="font-mono font-semibold text-green-500">25,305.50</span>
         </div>
-         <div class="data-point">
-            <span class="label">PCR (Overall)</span>
-            <span class="value">1.15</span>
+        <div class="flex justify-between items-center text-sm p-3 bg-gray-900 rounded-lg">
+          <span class="text-gray-400 font-semibold">SENSEX</span>
+          <span class="font-mono font-semibold text-green-500">82,450.11</span>
         </div>
-      </div>
-      <h2 style="margin-top: 2rem;">Top News</h2>
-      <div class="news-feed">
-          <div class="news-item">
-            <div class="source">Reuters • 5 mins ago</div>
-            <div class="headline">RBI Governor signals stable interest rates for the upcoming quarter.</div>
-          </div>
-          <div class="news-item">
-            <div class="source">Bloomberg • 25 mins ago</div>
-            <div class="headline">Major IT firms report positive earnings guidance, boosting sector sentiment.</div>
-          </div>
+        <div class="flex justify-between items-center text-sm p-3 bg-gray-900 rounded-lg">
+          <span class="text-gray-400 font-semibold">Crude Oil</span>
+          <span class="font-mono font-semibold text-red-500">7,150.00</span>
+        </div>
       </div>
     </aside>
+
   </div>
 
   <script>
-    document.getElementById('generateBtn').addEventListener('click', () => {
-        const placeholder = document.getElementById('placeholder');
-        const reportContent = document.getElementById('reportContent');
+    function autofillDateTime() {
+      const now = new Date();
+      // NEW: Create a new date object for the future time
+      const futureTime = new Date(now.getTime() + 10 * 60000); // Add 10 minutes (10 * 60 * 1000 milliseconds)
+      
+      const formattedDate = now.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      
+      // NEW: Format the future time, not the current time
+      const formattedTime = futureTime.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+      
+      document.getElementById('dateToday').value = formattedDate;
+      document.getElementById('currentTime').value = formattedTime;
+    }
 
-        // 1. Simulate loading state
-        placeholder.innerHTML = '<h2>Generating Analysis... Please Wait.</h2>'; // Simple loading text
-        reportContent.style.display = 'none';
+    function updatePrompt() {
+      const assetName = document.getElementById("assetName").value;
+      const assetPrice = document.getElementById("assetPrice").value;
+      const expiryDate = document.getElementById("expiryDate").value;
+      const dateToday = document.getElementById("dateToday").value;
+      const capital = document.getElementById("capital").value;
+      const currentTime = document.getElementById("currentTime").value;
+      const timeTillTradeClose = document.getElementById("timeTillTradeClose").value;
 
-        // 2. Simulate fetching data and getting a response from AI
-        setTimeout(() => {
-            // 3. Hide placeholder and show the populated report
-            placeholder.style.display = 'none';
-            reportContent.style.display = 'block';
+      const promptText = `
+You are an expert financial analyst specializing in the Indian equity and derivatives markets, especially ${assetName} options. The current ${assetName} level is ${assetPrice}.
 
-            // In a real app, you would take values from the form,
-            // construct the prompt, send to an AI, get the response,
-            // and then dynamically populate the innerHTML of the cards below.
-            // For this demo, we are just showing the pre-filled static data.
+Using a combination of:
+• Technical analysis (candlestick patterns, intraday indicators, support/resistance, implied volatility, option Greeks, etc.)
+• Fundamental analysis (macroeconomic cues, FII/DII flows, sectoral news, global markets impact)
+• Real-time news sentiment (headlines, corporate announcements, RBI commentary, geopolitical developments)
 
-        }, 1500); // 1.5 second delay
+produce a short report with intraday probability estimates (in percentages) for whether ${assetName} will move:
+1. Upside
+2. Downside
+3. volatile market (market maybe goes big up or down)
+
+Specifically: 
+1. Starting from the current index level of ${assetPrice}, calculate the probability (in %) that the index will finish the trading day higher, lower, or roughly flat. Clearly state your assumptions (e.g., what technical patterns or news you’re emphasizing). 
+2. Based on those probabilities, recommend which option-buying near ATM call and put is likely to yield the highest expected profit today: Buying call options only near ATM Buying put options only near ATM For each strategy, estimate the expected return (percentage) and mention any major risks (e.g., sudden volatility spikes, unexpected news). I want to trade between intraday now market open.
+
+Let’s assume a high-risk* approach. I will take the monthly expiry, which will be ${expiryDate}. At the end, provide a concise “Actionable Summary”:
+• Which specific strategy should I execute today ${dateToday} — buy calls, buy puts or both buy?
+• Which strike(s) would you choose if you were trading intraday?
+• Approximately what premium (₹) and probability (%) does each recommended position carry?
+capital ${capital}, need to close in a winning position before ${timeTillTradeClose} today itself, now time ${currentTime}. Give me the tp1 and tp2 and sl1 and sl2 in LTP and in rupees (how much do I win if sl hit or tp hit in rs) also, and check all nse option chain and other website for live option price, and any global news that will affect or increase the chance of winning the trade. tp1 must be a realisable take profit.
+      `;
+      
+      document.getElementById("promptOutput").textContent = promptText.trim();
+    }
+    
+    // --- UPDATED SCRIPT LOGIC ---
+    window.addEventListener('load', () => {
+        // 1. Fill the date and time fields first
+        autofillDateTime();
+        
+        // 2. Run the prompt generation once on load with the new data
+        updatePrompt();
+
+        // 3. Set up listeners for automatic updates on any input change
+        const inputFields = document.querySelectorAll('aside input[type="text"]');
+        inputFields.forEach(field => {
+            field.addEventListener('input', updatePrompt);
+        });
+
+        // 4. Set up the copy button functionality
+        const copyBtn = document.getElementById('copyBtn');
+        const promptOutput = document.getElementById('promptOutput');
+
+        copyBtn.addEventListener('click', () => {
+            // Get the text from the <pre> element
+            const textToCopy = promptOutput.textContent;
+            
+            // Use the Clipboard API to copy the text
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Provide visual feedback to the user
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('bg-green-600');
+                
+                // Revert the button text after 2 seconds
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('bg-green-600');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                // Optional: Provide an error message to the user
+                copyBtn.textContent = 'Error';
+            });
+        });
     });
   </script>
+
 </body>
 </html>
